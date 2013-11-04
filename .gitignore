@@ -1,0 +1,20 @@
+# Ant
+local.properties
+
+# Config
+src/android/pplive/media/config/Config.java
+
+# Temp
+*~
+*.tmp
+*.swp
+*.orig
+
+# Build
+build/
+dist/
+obj/
+sdk/
+syms/
+bin/
+libs/

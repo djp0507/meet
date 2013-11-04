@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name ="Meet_SDK" default="release">
+	
+	<property file="local.properties" />
+	<property file="build.properties" />
+
+	<property name="SdkName" value="meet_sdk" />
+	<property name="JarName" value="MeetSDK" />
+	
+	<property name="jni.dir" location="jni" />
+	<property name="obj.dir" location="obj" />
+	<property name="libs.dir" location="libs" />
+
+	<property name="src.dir" location="src" />
+	<property name="build.dir" location="build" />
+
+	<property name="sdk.dir" location="sdk" />
+	<property name="dist.dir" location="dist" />
+	<property name="symbol.dir" location="syms" />
+
+	<tstamp>
+		<format property="build.timestamp" pattern="yyyyMMddHHmm" />
+	</tstamp>
+	<condition property="sdk.version" value="${Version}" else="${build.timestamp}">
+		<isset property="Version" />
+	</condition>
+
+	<target name="compile">
+		<mkdir dir="${build.dir}/class" />
+		
+		<condition property="config.sdk.version" value="${sdk.version}" else="${sdk.version}_debug" >
+			<isfalse value="${debug}" />
+		</condition>
+		
+		<condition property="config.startp2p" value="true" else="false">
+			<and>
+				<isset property="StartP2P" />
+				<equals arg1="${StartP2P}" arg2="true" casesensitive="false" trim="true" />
+			</and>
+		</condition>
+		
+		<copy file="${src.dir}/android/pplive/media/config/Config.java.template" tofile="${src.dir}/android/pplive/media/config/Config.java" filtering="true" overwrite="true">
+			<filterset>
+				<filter token="CONFIG.SDK.VERSION" value="${config.sdk.version}" />
+				<filter token="CONFIG.STARTP2P" value="${config.startp2p}"/>
+			</filterset>
+		</copy>
+		
+		<condition property="compile.option.debug" value="on" else="false" >
+			<istrue value="${debug}" />
+		</condition>
+
+		<path id="libraries">
+			<fileset file="${ANDROID_HOME}/platforms/android-16/android.jar" />
+		</path>
+
+		<javac 
+			srcdir="${src.dir}" 
+			destdir="${build.dir}/class"
+			classpathref="libraries"
+			includeantruntime="false"
+			target="1.6"
+			encoding="UTF-8"
+			listfiles="true"
+			debug="${compile.option.debug}">
+			<include name="android/**/*.java" />
+			<compilerarg value="-Xlint:unchecked" />
+			<compilerarg value="-Xlint:deprecation" />
+		</javac>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<mkdir dir="${sdk.dir}" />
+		<jar destfile="${sdk.dir}/jars/${JarName}.jar" basedir="build/class" />
+	</target>
+
+	<target name="ndk-build">
+		<!-- ndk-build.cmd to return a non-zero ERRORLEVEL when make fails in Android NDK(Revision 8b).  -->
+		<condition property="ndk-build-command" value="${NDK_HOME}/prebuilt/windows/bin/make.exe" else="${NDK_HOME}/ndk-build">
+			<os family="windows" />
+		</condition>
+
+		<condition property="os.option" value="-f ${NDK_HOME}/build/core/build-local.mk SHELL=cmd" else="">
+			<os family="windows" />
+		</condition>
+
+		<condition property="ndk.debug.option" value="NDK_DEBUG=1" else="NDK_DEBUG=0">
+			<istrue value="${debug}" />
+		</condition>
+
+		<condition property="build.option" value="APP_OPTIM=debug" else="APP_OPTIM=release">
+			<istrue value="${debug}" />
+		</condition>
+		
+		<exec executable="${ndk-build-command}" dir="${jni.dir}" failonerror="true" >
+			<arg line="${os.option}" />
+			<arg value="${ndk.debug.option}" />
+			<arg value="${build.option}" />
+		</exec>
+	</target>
+
+	<target name="ndk-build-release" depends="-set-release-mode, ndk-build" />
+
+	<target name="ndk-build-debug" depends="-set-debug-mode, ndk-build" />
+
+	<target name="sdk" depends="ndk-build, jar">
+		<copy todir="${sdk.dir}/libs" overwrite="true" verbose="true">
+			<fileset dir="${libs.dir}">
+				<filename name="**/*.so" />
+			</fileset>
+		</copy>
+		<copy todir="${sdk.dir}/libs/armeabi" overwrite="true" verbose="true">
+			<filelist dir="${jni.dir}/meet/prebuilt">
+				<file name="libsample.so" />
+			</filelist>
+		</copy>
+	</target>
+
+	<target name="-set-release-mode">
+		<property name="debug" value="false" />
+	</target>
+
+	<target name="-set-debug-mode">
+		<property name="debug" value="true" />
+	</target>
+	
+	<target name="-symbol">
+		<mkdir dir="${symbol.dir}" />
+		<copy todir="${symbol.dir}" overwrite="true" verbose="true">
+			<fileset dir="${obj.dir}/local/armeabi">
+				<filename name="**/*.so" />
+			</fileset>
+		</copy>
+		<zip destfile="${dist.dir}/${SdkName}_symbol_${sdk.version}.zip" basedir="${symbol.dir}"/>
+	</target>
+	
+	<target name="debug" depends="clean, -set-debug-mode, sdk, -symbol" >
+		<zip destfile="${dist.dir}/${SdkName}_debug_${sdk.version}.zip" basedir="${sdk.dir}" />
+	</target>
+
+	<target name="release" depends="clean, -set-release-mode, sdk" >
+		<mkdir dir="${dist.dir}" />
+		<zip destfile="${dist.dir}/${SdkName}_${sdk.version}.zip" basedir="${sdk.dir}" />
+	</target>
+
+	<target name="clean" >
+		<delete dir="${obj.dir}" />
+		<delete dir="${libs.dir}" />
+		<delete dir="${build.dir}" />
+		<delete dir="${sdk.dir}" />
+		<delete dir="${symbol.dir}" />
+	</target>
+
+</project>

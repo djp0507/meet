@@ -1,0 +1,2 @@
+厂商            设备型号                        Board型号     CPU型号	    Android版本      备注
+ChangHong       长虹智能电视                    mt5396                    4.0.4            ok
