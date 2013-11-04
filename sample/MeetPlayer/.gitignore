@@ -1,0 +1,7 @@
+# Android generated
+bin/
+gen/
+.settings/
+
+libs/armeabi/*.so
+libs/MeetSDK.jar

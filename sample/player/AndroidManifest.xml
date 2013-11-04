@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	  package="com.android.player"
+      android:versionCode="2"
+      android:versionName="1.1">
+    <uses-sdk android:minSdkVersion="8" 
+		        android:targetSdkVersion="8"
+		        android:maxSdkVersion="16" />
+    <!-- MODIFY_AUDIO_SETTINGS is needed to use audio effects such as environmental reverb -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    
+    <application android:label="Player">
+        <activity android:name="com.android.player.Player" 
+        		android:label="Player"
+        		android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".DisplayMessageActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.android.player.Player" />
+        </activity>
+    </application>
+        
+
+</manifest>

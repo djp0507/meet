@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="button_pause">pause</string>
+    <string name="button_play">play</string>
+    <string name="button_jumpActivity">jumpActivity</string>
+
+</resources>

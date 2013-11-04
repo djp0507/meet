@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name ="jni_breakpad_util" default="release">
+	
+	<property file="local.properties" />
+
+	<property name="SdkName" value="breakpad_util" />
+	<property name="JarName" value="breakpad_util_jni" />
+
+	<property name="android.home" location="android" />
+	<property name="breakpad_util.home" value="${android.home}/breakpad_util" />
+	
+	<property name="build.jni.dir" value="${breakpad_util.home}/jni" />
+	<property name="build.obj.dir" value="${breakpad_util.home}/obj" />
+	<property name="build.libs.dir" value="${breakpad_util.home}/libs" />
+
+	<property name="compile.src.dir" value="src/java" />
+	<property name="compile.build.dir" location="bin" />
+	<property name="compile.jar.dir" location="jar" />
+
+	<property name="dist.sdk.dir" location="sdk" />
+	<property name="dist.home" location="dist" />
+
+	<tstamp>
+		<format property="dist.timestamp" pattern="yyyyMMddHHmm" />
+	</tstamp>
+	<condition property="dist.sdk.version" value="${Version}" else="${dist.timestamp}">
+		<isset property="Version" />
+	</condition>
+
+	<target name="compile">
+		<mkdir dir="${compile.build.dir}/class" />
+		
+		<javac 
+			srcdir="${compile.src.dir}" 
+			destdir="${compile.build.dir}/class"
+			classpath="${ANDROID_HOME}/platforms/android-16/android.jar" 
+			includeantruntime="false" >
+			<include name="com/pplive/thirdparty/**/*.java" />
+			<compilerarg value="-Xlint:unchecked" />
+			<compilerarg value="-Xlint:deprecation" />
+		</javac>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<mkdir dir="${dist.sdk.dir}" />
+		<jar destfile="${dist.sdk.dir}/${JarName}.jar" basedir="${compile.build.dir}/class" />
+	</target>
+
+	<target name="ndk-build">
+		<!-- ndk-build.cmd to return a non-zero ERRORLEVEL when make fails in Android NDK(Revision 8b).  -->
+		<condition property="ndk-build-command" value="${NDK_HOME}/prebuilt/windows/bin/make.exe" else="${NDK_HOME}/ndk-build">
+			<os family="windows" />
+		</condition>
+
+		<condition property="ndk.os.option" value="-f ${NDK_HOME}/build/core/build-local.mk SHELL=cmd" else="">
+			<os family="windows" />
+		</condition>
+
+		<condition property="ndk.debug.option" value="NDK_DEBUG=1" else="NDK_DEBUG=0">
+			<istrue value="${debug}" />
+		</condition>
+
+		<condition property="ndk.build.option" value="APP_OPTIM=debug" else="APP_OPTIM=release">
+			<istrue value="${debug}" />
+		</condition>
+		
+		<exec executable="${ndk-build-command}" dir="${build.jni.dir}" failonerror="true" >
+			<arg line="${ndk.os.option}" />
+			<arg value="${ndk.debug.option}" />
+			<arg value="${ndk.build.option}" />
+		</exec>
+	</target>
+
+	<target name="sdk" depends="ndk-build, jar">
+		<copy todir="${dist.sdk.dir}" overwrite="true" verbose="true">
+			<fileset dir="${build.libs.dir}/armeabi" >
+				<filename name="*.so" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="-set-release-mode">
+		<property name="debug" value="false" />
+	</target>
+	
+	<target name="release" depends="clean, -set-release-mode, sdk" >
+		<mkdir dir="${dist.home}" />
+		<zip destfile="${dist.home}/${SdkName}_${dist.sdk.version}.zip" basedir="${dist.sdk.dir}" />
+	</target>
+
+	<target name="clean" >
+		<delete dir="${build.obj.dir}" />
+		<delete dir="${build.libs.dir}" />
+		<delete dir="${compile.build.dir}" />
+		<delete dir="${dist.sdk.dir}" />
+		<delete dir="${dist.home}" />
+	</target>
+
+</project>

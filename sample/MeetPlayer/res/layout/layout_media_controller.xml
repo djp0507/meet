@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingBottom="20dp" >
+    
+	<com.pplive.meetplayer.ui.widget.VerticalSeekBar
+	    style="@style/seek_style"
+		android:id="@+id/mediacontroller_volume"
+		android:layout_width="30dp"
+		android:layout_height="150dp"
+		android:layout_above="@+id/layout_mediacontroller"
+		android:layout_marginBottom="10dp"
+		android:layout_alignParentRight="true" 
+		android:layout_marginRight="20dp" />
+    
+	<RelativeLayout
+	    android:id="@+id/layout_mediacontroller"
+	    android:layout_width="wrap_content"
+	    android:layout_height="80dp"
+		android:layout_alignParentBottom="true"
+		android:padding="10dp"
+		android:background="#40ffffff" >
+	    
+		<LinearLayout 
+			android:id="@+id/layout_player_panel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_above="@+id/layout_seek_panel"
+			android:layout_centerHorizontal="true"
+			android:orientation="horizontal" >
+			
+			<ImageButton
+			    android:id="@+id/player_bf_btn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/player_bf_btn"
+				android:background="@null" />
+		
+			<ImageButton
+			    android:id="@+id/player_play_pause_btn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="20dp"
+				android:layout_marginRight="20dp"
+				android:src="@drawable/player_pause_btn"
+				android:background="@null" />
+			
+			<ImageButton
+			    android:id="@+id/player_ff_btn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/player_ff_btn"
+				android:background="@null" />
+		      
+		</LinearLayout>
+		  
+		<RelativeLayout 
+			android:id="@+id/layout_seek_panel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true" >
+		  	
+			<TextView
+				android:id="@+id/current_time"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:layout_alignParentLeft="true"
+				android:textColor="#fff" />
+			      
+			<SeekBar 
+			    style="@style/seek_style"
+				android:id="@+id/mediacontroller_progress" 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="60dp"
+				android:layout_marginRight="60dp" />
+				
+			<TextView
+				android:id="@+id/end_time"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:layout_alignParentRight="true"
+				android:textColor="#fff" />
+			
+		</RelativeLayout>
+		    
+	</RelativeLayout>
+    
+</RelativeLayout>

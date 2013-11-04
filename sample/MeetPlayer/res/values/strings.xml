@@ -1,0 +1,17 @@
+<resources>
+	<!-- APP NAME -->
+    <string name="app_name">MeetPlayer</string>
+    
+    <!-- TITLE -->
+    <string name="title_activity_video_player">VideoPlayerActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_update">UpdateActivity</string>
+    
+    <!-- MENU -->
+    <string name="menu_search">Search</string>
+	
+    <!-- FORMAT -->
+    <string name="format_progress">Progress&#8230;%d%%</string>
+    <string name="format_video_duration">Duration: %s</string>
+    <string name="format_video_size">Size: %.2fMB</string>
+</resources>
