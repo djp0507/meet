@@ -128,7 +128,10 @@ class MediaPlayer {
 		    throw new IllegalStateException("Media Path is not set.");
 		}
 		
-		mPlayer = newInstance(this);
+		mPlayer = mDecodeMode.newInstance();
+		if (null == mPlayer) {
+		    mPlayer = newInstance(this);
+		}
 		
 		try {
 			setDataSource();

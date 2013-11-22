@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.pplive.media.MeetSDK;
 import android.pplive.media.player.MediaController.MediaPlayerControl;
 import android.pplive.media.util.LogUtils;
@@ -500,9 +501,8 @@ public class MeetVideoView extends SurfaceView implements MediaPlayerControl {
         mDisplayMode = mode;
         requestLayout();
     }
-    
-    public int getDisplayMode()
-    {
+
+    public int getDisplayMode() {
         return mDisplayMode;
     }
 
@@ -762,7 +762,23 @@ public class MeetVideoView extends SurfaceView implements MediaPlayerControl {
     public static final int MEDIA_INFO_METADATA_UPDATE = 802;
 
     public enum DecodeMode {
-        HW_SYSTEM, HW_OMX, SW, AUTO, UNKNOWN
+        HW_SYSTEM, HW_OMX {
+            @Override
+            public MediaPlayerInterface newInstance() {
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ? new NuMediaPlayer() : new OMXMediaPlayer();
+            }
+        },
+        SW {
+            @Override
+            public MediaPlayerInterface newInstance() {
+                return new FFMediaPlayer();
+            }
+        },
+        AUTO, UNKNOWN;
+
+        public MediaPlayerInterface newInstance() {
+            return new SystemMediaPlayer();
+        }
     }
 
     public void setDecodeMode(DecodeMode mode) {
